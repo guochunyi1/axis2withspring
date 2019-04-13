@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="sample.pojo.persistence.BankMapper">
+	<!-- 定义缓存 一般是一级缓存，如果用同一个sqlsession 那么相同查询直接会从缓存中查找 <cache size="1024" flushInterval="60000" 
+		eviction="LRU" readOnly="false"></cache> -->
+
+	<!-- 按照用户名和密码查找 -->
+	<select id="findUserTest" resultType="userTest">
+		select
+		t.*
+		from
+		user_test t
+	</select>
+
+	<insert id="insertRequestInfo"
+		parameterType="sample.pojo.data.RequestInfo">
+		insert into request_info (rq_date, rq_time, allnum,
+		vchkcode,
+		querynumber)
+		values (#{rqDate, jdbcType=VARCHAR},
+		#{rqTime,jdbcType=VARCHAR},
+		#{allnum,jdbcType=INTEGER},
+		#{vchkcode,jdbcType=VARCHAR},
+		#{querynumber,jdbcType=VARCHAR})
+	</insert>
+	
+	<insert id="insertRequestResult"
+		parameterType="sample.pojo.data.RequestResult">
+		insert into request_result (serialnum,
+		querynum)
+		values (#{serialnum, jdbcType=VARCHAR},
+		#{querynum,jdbcType=VARCHAR})
+	</insert>
+
+	<insert id="insertRequestList" useGeneratedKeys="false"
+		parameterType="list">
+		insert all
+		<foreach collection="list" item="item" separator=""
+			index="index">
+			into request_list (uuid, vchkcode, querynumber,idcardnum,vname)
+			values
+			(#{item.uuid, jdbcType=VARCHAR},
+			#{item.vchkcode,jdbcType=VARCHAR},#{item.querynumber,jdbcType=VARCHAR},
+			#{item.idcardnum,jdbcType=VARCHAR},#{item.vname,jdbcType=VARCHAR}
+			)
+		</foreach>
+		select 1 from dual
+	</insert>
+
+	<select id="selectRequestResult" parameterType="java.lang.String"
+		resultType="requestResult">
+		select
+		t.*
+		from
+		request_result t
+		where t.querynumber=#{querynumber,jdbcType=VARCHAR}
+	</select>
+
+</mapper>
